@@ -39,6 +39,7 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParkingHistoryFragment extends BaseFragment implements MainContract.IHistoryView,
@@ -54,6 +55,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
     private LocationCallback locationCallback;
     private AddressResultReceiver mResultReceiver;
     private Location lastKnownLocation;
+    private ParkingAdapter mAdapter;
 
     @Nullable
     @Override
@@ -76,6 +78,8 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         rv_ParkingListView = view.findViewById(R.id.rv_parking_list);
         rv_ParkingListView.setHasFixedSize(true);
         rv_ParkingListView.setLayoutManager(new LinearLayoutManager(mContext));
+        mAdapter = new ParkingAdapter(presenter, new ArrayList<Parking>());
+        rv_ParkingListView.setAdapter(mAdapter);
         presenter = new ParkingHistoryImpl(this, mCommunicator);
         presenter.LoadParkingHistory();
         mResultReceiver = new AddressResultReceiver(new Handler(), presenter);
@@ -157,8 +161,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
 
     @Override
     public void showParkingList(List<Parking> list) {
-        ParkingAdapter adapter = new ParkingAdapter(presenter, list);
-        rv_ParkingListView.setAdapter(adapter);
+        mAdapter.updateList(list);
         tv_NoHistory.setVisibility(View.GONE);
     }
 
@@ -197,6 +200,12 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         builder.setCancelable(true);
         builder.setView(dialogLayout);
         builder.show();
+    }
+
+    @Override
+    public void notifyParkingListUpdated(Parking parking) {
+        Log.d(MainContract.TAG, "notifyParkingListUpdated");
+        mAdapter.updateList(parking);
     }
 
 

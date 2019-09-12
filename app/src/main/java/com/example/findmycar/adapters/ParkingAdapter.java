@@ -53,6 +53,16 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
         return mDataList.size();
     }
 
+    public void updateList(List<Parking> list) {
+        mDataList = list;
+        notifyDataSetChanged();
+    }
+
+    public void updateList(Parking parking) {
+        mDataList.add(0,parking);
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         protected TextView tv_Date;
         protected TextView tv_Desc;

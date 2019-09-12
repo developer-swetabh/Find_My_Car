@@ -93,5 +93,6 @@ public class ParkingHistoryImpl implements MainContract.IParkingPresenter {
         }
         Parking model = new Parking(System.currentTimeMillis(), address, extraInfo, lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         ParkingApplication.getParkingHelperInstance().saveLocation(model);
+        mHistoryView.notifyParkingListUpdated(model);
     }
 }

@@ -65,7 +65,7 @@ public class ParkingQueryHelper {
                         double lat = cursor.getDouble(cursor.getColumnIndex(ParkingReaderContract.ParkingEntry.COLUMN_NAME_LAT));
                         double longitude = cursor.getDouble(cursor.getColumnIndex(ParkingReaderContract.ParkingEntry.COLUMN_NAME_LONG));
 
-                        parkingList.add(new Parking(time, add, extraInfo, lat, longitude));
+                        parkingList.add(0,new Parking(time, add, extraInfo, lat, longitude));
                     } while (cursor.moveToNext());
 
                     return parkingList;

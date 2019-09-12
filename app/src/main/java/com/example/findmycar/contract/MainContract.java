@@ -32,6 +32,8 @@ public class MainContract {
         void viewOnMap(double lat, double longitude);
 
         void showSaveAddDialog(String addressOutput);
+
+        void notifyParkingListUpdated(Parking parking);
     }
 
     public interface IParkingPresenter {
