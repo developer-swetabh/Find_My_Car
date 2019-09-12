@@ -78,9 +78,9 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         rv_ParkingListView = view.findViewById(R.id.rv_parking_list);
         rv_ParkingListView.setHasFixedSize(true);
         rv_ParkingListView.setLayoutManager(new LinearLayoutManager(mContext));
+        presenter = new ParkingHistoryImpl(this, mCommunicator);
         mAdapter = new ParkingAdapter(presenter, new ArrayList<Parking>());
         rv_ParkingListView.setAdapter(mAdapter);
-        presenter = new ParkingHistoryImpl(this, mCommunicator);
         presenter.LoadParkingHistory();
         mResultReceiver = new AddressResultReceiver(new Handler(), presenter);
         locationCallback = new LocationCallback() {
