@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Find My Car ? Car Parking</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_history_found">No Parking History !!. Tap <b> + </b> to add new.</string>
+    <string name="address_vehicle_parked">Address where your vehicle is parked</string>
+    <string name="view_on_map"><u>view on map</u></string>
+</resources>

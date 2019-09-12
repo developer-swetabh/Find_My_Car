@@ -1,0 +1,68 @@
+package com.example.findmycar.adapters;
+
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.example.findmycar.R;
+import com.example.findmycar.contract.MainContract;
+import com.example.findmycar.model.Parking;
+import com.example.findmycar.utils.Utils;
+
+import java.util.List;
+
+public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHolder> {
+    private List<Parking> mDataList;
+    private MainContract.IParkingPresenter mPresenter;
+
+    public ParkingAdapter(MainContract.IParkingPresenter presenter, List<Parking> list) {
+        mPresenter = presenter;
+        mDataList = list;
+    }
+
+    @NonNull
+    @Override
+    public ParkingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_parking_item, viewGroup, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ParkingAdapter.ViewHolder holder, int position) {
+        final Parking model = mDataList.get(position);
+        holder.tv_Date.setText(Utils.covertToDate(model.getTimeOfParking()));
+        StringBuilder builder = new StringBuilder();
+        builder.append(model.getExtraInfo());
+        builder.append(" ");
+        builder.append(model.getAddress());
+        holder.tv_Desc.setText(builder);
+        holder.ll_ViewOnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.viewOnMap(model.getLatitude(), model.getLongitude());
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return mDataList.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        protected TextView tv_Date;
+        protected TextView tv_Desc;
+        protected LinearLayout ll_ViewOnMap;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tv_Date = itemView.findViewById(R.id.tv_date);
+            tv_Desc = itemView.findViewById(R.id.tv_desc);
+            ll_ViewOnMap = itemView.findViewById(R.id.ll_view_on_map);
+        }
+    }
+}
