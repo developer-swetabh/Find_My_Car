@@ -8,21 +8,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.findmycar.R;
 import com.example.findmycar.contract.MainContract;
-import com.example.findmycar.ui.fragment.AddressFragment;
 import com.example.findmycar.ui.fragment.BaseFragment;
 import com.example.findmycar.ui.fragment.ParkingHistoryFragment;
 import com.example.findmycar.utils.Utils;
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_about) {
             return true;
         }
 

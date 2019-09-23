@@ -13,15 +13,16 @@ import com.example.findmycar.contract.MainContract;
 import com.example.findmycar.model.Parking;
 import com.example.findmycar.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHolder> {
     private List<Parking> mDataList;
     private MainContract.IParkingPresenter mPresenter;
 
-    public ParkingAdapter(MainContract.IParkingPresenter presenter, List<Parking> list) {
+    public ParkingAdapter(MainContract.IParkingPresenter presenter) {
         mPresenter = presenter;
-        mDataList = list;
+        mDataList = new ArrayList<Parking>();
     }
 
     @NonNull
@@ -59,16 +60,16 @@ public class ParkingAdapter extends RecyclerView.Adapter<ParkingAdapter.ViewHold
     }
 
     public void updateList(Parking parking) {
-        mDataList.add(0,parking);
-        notifyDataSetChanged();
+        mDataList.add(0, parking);
+        notifyItemInserted(0);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        protected TextView tv_Date;
-        protected TextView tv_Desc;
-        protected LinearLayout ll_ViewOnMap;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView tv_Date;
+        private TextView tv_Desc;
+        private LinearLayout ll_ViewOnMap;
 
-        public ViewHolder(@NonNull View itemView) {
+        private ViewHolder(@NonNull View itemView) {
             super(itemView);
             tv_Date = itemView.findViewById(R.id.tv_date);
             tv_Desc = itemView.findViewById(R.id.tv_desc);

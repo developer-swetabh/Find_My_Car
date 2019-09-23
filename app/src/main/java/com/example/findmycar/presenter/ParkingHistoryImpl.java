@@ -3,6 +3,7 @@ package com.example.findmycar.presenter;
 import android.content.Context;
 import android.location.Location;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.example.findmycar.ParkingApplication;
 import com.example.findmycar.contract.MainContract;
@@ -38,8 +39,10 @@ public class ParkingHistoryImpl implements MainContract.IParkingPresenter {
     public void LoadParkingHistory() {
         List<Parking> list = ParkingApplication.getParkingHelperInstance().getHistoryList();
         if (list.isEmpty()) {
+            Log.d(MainContract.TAG, "No parking list");
             mHistoryView.noParkingHistory();
         } else {
+            Log.d(MainContract.TAG, "contains some list");
             mHistoryView.showParkingList(list);
         }
     }

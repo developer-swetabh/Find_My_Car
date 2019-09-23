@@ -79,7 +79,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         rv_ParkingListView.setHasFixedSize(true);
         rv_ParkingListView.setLayoutManager(new LinearLayoutManager(mContext));
         presenter = new ParkingHistoryImpl(this, mCommunicator);
-        mAdapter = new ParkingAdapter(presenter, new ArrayList<Parking>());
+        mAdapter = new ParkingAdapter(presenter);
         rv_ParkingListView.setAdapter(mAdapter);
         presenter.LoadParkingHistory();
         mResultReceiver = new AddressResultReceiver(new Handler(), presenter);
@@ -191,10 +191,18 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         final EditText extraInfo = dialogLayout.findViewById(R.id.edt_extra);
         address.setText(addressOutput);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 presenter.saveLocation(address.getText().toString(), extraInfo.getText().toString(), lastKnownLocation);
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getString(R.string.fetch_add_again), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startIntentService();
+                dialog.dismiss();
             }
         });
         builder.setCancelable(true);
@@ -205,6 +213,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
     @Override
     public void notifyParkingListUpdated(Parking parking) {
         Log.d(MainContract.TAG, "notifyParkingListUpdated");
+        rv_ParkingListView.setVisibility(View.VISIBLE);
         mAdapter.updateList(parking);
     }
 
