@@ -39,8 +39,8 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ParkingHistoryFragment extends BaseFragment implements MainContract.IHistoryView,
         OnFailureListener, OnSuccessListener<LocationSettingsResponse> {
@@ -119,7 +119,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            getActivity().onBackPressed();
+            Objects.requireNonNull(getActivity()).onBackPressed();
         }
         fusedLocationClient.requestLocationUpdates(locationRequest,
                 locationCallback,
