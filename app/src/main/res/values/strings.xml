@@ -13,4 +13,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="fetch_add_again">Re fetch Add</string>
     <string name="ok">OK</string>
+    <string name="add_fetch_alert">Unable to fetch address, please check your internet and try again!!</string>
+    <string name="enable_gps_alert">Please Enable GPS to get current location</string>
 </resources>

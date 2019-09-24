@@ -185,11 +185,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
 
     @Override
     public void showEnableGPSAlert() {
-        Utils.showSnackBarAlert(mView, "Please Enable GPS to get current location");
+        Utils.showSnackBarAlert(mView, this.getString(R.string.enable_gps_alert));
     }
 
     @Override
     public void showAddressNotFoundAlert() {
-        Utils.showSnackBarAlert(mView, "Unable to fetch address, please check your internet and try again!!");
+        Utils.showSnackBarAlert(mView, this.getString(R.string.add_fetch_alert));
     }
 }
