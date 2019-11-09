@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 
 import com.example.findmycar.model.Parking;
+import com.example.findmycar.ui.fragment.BaseFragment;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,6 +25,12 @@ public class MainContract {
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
             ".LOCATION_DATA_EXTRA";
 
+    public interface BaseParkingPresenter {
+        void addressNotFound();
+
+        void loadFetchedAddress(String addressOutput);
+    }
+
     public interface IHistoryView {
         void noParkingHistory();
 
@@ -36,16 +43,13 @@ public class MainContract {
         void notifyParkingListUpdated(Parking parking);
     }
 
-    public interface IParkingPresenter {
+    public interface IParkingPresenter extends BaseParkingPresenter {
         void LoadParkingHistory();
 
         void viewOnMap(double lat, double longitude);
 
         LocationRequest createLocationRequest(Context context, OnSuccessListener<LocationSettingsResponse> successListener, OnFailureListener failureListener);
 
-        void addressNotFound();
-
-        void loadFetchedAddress(String addressOutput);
 
         void checkLocationSettings(OnSuccessListener<LocationSettingsResponse> successListener, OnFailureListener failureListener);
 
@@ -54,6 +58,13 @@ public class MainContract {
         void saveLocation(String address, String extraInfo, Location lastKnownLocation);
     }
 
+    public interface IMapViewPresenter extends BaseParkingPresenter {
+
+    }
+
+    public interface IMapView {
+
+    }
     public interface IFragmentInteraction {
         void onSaveNewClicked();
     }
@@ -66,5 +77,8 @@ public class MainContract {
 
         void showAddressNotFoundAlert();
 
+        void updateBaseFragment(BaseFragment mBaseFragment);
+
+        void updateLocation(Location lastKnownLocation);
     }
 }

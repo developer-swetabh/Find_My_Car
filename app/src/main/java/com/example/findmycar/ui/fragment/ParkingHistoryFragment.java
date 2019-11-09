@@ -45,7 +45,7 @@ import java.util.Objects;
 public class ParkingHistoryFragment extends BaseFragment implements MainContract.IHistoryView,
         OnFailureListener, OnSuccessListener<LocationSettingsResponse> {
 
-    MainContract.IParkingPresenter presenter;
+    private MainContract.IParkingPresenter presenter;
     private TextView tv_NoHistory;
     private RecyclerView rv_ParkingListView;
     private Context mContext;
@@ -93,6 +93,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
                     // Update UI with location data
                     // ...
                     lastKnownLocation = location;
+                    mCommunicator.updateLocation(lastKnownLocation);
                     Log.d(MainContract.TAG, "LAT =" + location.getLatitude() + ", long = " + location.getLongitude());
                 }
             }
@@ -138,6 +139,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
 
     @Override
     public void onSaveNewClicked() {
+        Log.d(MainContract.TAG, "onSaveNewClicked");
         //presenter.checkLocationSettings(this, this);
         if (lastKnownLocation != null)
             startIntentService();

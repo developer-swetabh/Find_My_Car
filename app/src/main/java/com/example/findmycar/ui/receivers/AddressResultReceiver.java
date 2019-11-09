@@ -8,7 +8,7 @@ import android.util.Log;
 import com.example.findmycar.contract.MainContract;
 
 public class AddressResultReceiver extends ResultReceiver {
-    private final MainContract.IParkingPresenter mPresenter;
+    private final MainContract.BaseParkingPresenter mPresenter;
 
     /**
      * Create a new ResultReceive to receive results.  Your
@@ -18,7 +18,7 @@ public class AddressResultReceiver extends ResultReceiver {
      * @param handler
      * @param presenter
      */
-    public AddressResultReceiver(Handler handler, MainContract.IParkingPresenter presenter) {
+    public AddressResultReceiver(Handler handler, MainContract.BaseParkingPresenter presenter) {
         super(handler);
         mPresenter = presenter;
     }

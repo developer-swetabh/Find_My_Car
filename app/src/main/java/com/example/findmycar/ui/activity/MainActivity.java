@@ -4,13 +4,17 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.findmycar.R;
+import com.example.findmycar.adapters.HomePagerAdapter;
 import com.example.findmycar.contract.MainContract;
 import com.example.findmycar.ui.fragment.BaseFragment;
 import com.example.findmycar.ui.fragment.ParkingHistoryFragment;
@@ -38,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
     private static final int ALL_PERMISSIONS_RESULT = 1011;
     private static final int REQUEST_CHECK_SETTINGS = 1000;
     private View mView;
+    private FragmentPagerAdapter mPagerAdapter;
+    ViewPager vpPager;
+    public static Location mLastknownlocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +59,16 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
             @Override
             public void onClick(View view) {
                 mView = view;
-                mBaseFragment.onSaveNewClicked();
+                if (mBaseFragment != null)
+                    mBaseFragment.onSaveNewClicked();
             }
         });
-        mBaseFragment = new ParkingHistoryFragment();
-        mBaseFragment.setCommunicator(this);
-
+ /*       mBaseFragment = new ParkingHistoryFragment();
+        mBaseFragment.setCommunicator(this);*/
+        vpPager = (ViewPager) findViewById(R.id.vpPager);
+        mPagerAdapter = new HomePagerAdapter(getSupportFragmentManager(), mBaseFragment, this);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(vpPager);
         // we add permissions we need to request location of the users
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -68,10 +80,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
                 requestPermissions(permissionsToRequest.toArray(
                         new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
             } else {
-                addFragment(mBaseFragment);
+                //addFragment(mBaseFragment);
+                vpPager.setAdapter(mPagerAdapter);
             }
         } else {
-            addFragment(mBaseFragment);
+            //addFragment(mBaseFragment);
+            vpPager.setAdapter(mPagerAdapter);
         }
 
     }
@@ -131,7 +145,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
                         }
                     }
                 } else {
-                    addFragment(mBaseFragment);
+                    //addFragment(mBaseFragment);
+                    vpPager.setAdapter(mPagerAdapter);
                 }
 
                 break;
@@ -191,5 +206,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
     @Override
     public void showAddressNotFoundAlert() {
         Utils.showSnackBarAlert(mView, this.getString(R.string.add_fetch_alert));
+    }
+
+    @Override
+    public void updateBaseFragment(BaseFragment baseFragment) {
+        mBaseFragment = baseFragment;
+    }
+
+    @Override
+    public void updateLocation(Location lastKnownLocation) {
+mLastknownlocation= lastKnownLocation;
     }
 }
