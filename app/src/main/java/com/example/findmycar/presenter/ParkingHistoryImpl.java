@@ -26,9 +26,6 @@ public class ParkingHistoryImpl implements MainContract.IParkingPresenter {
 
     private final MainContract.IHistoryView mHistoryView;
     private final MainContract.IActivityCommunicator mActivityCommunicator;
-    private LocationRequest locationRequest;
-    private Context mContext;
-    private LocationSettingsRequest.Builder mLocationBuilder;
 
     public ParkingHistoryImpl(MainContract.IHistoryView historyView, MainContract.IActivityCommunicator communicator) {
         mHistoryView = historyView;
@@ -52,19 +49,6 @@ public class ParkingHistoryImpl implements MainContract.IParkingPresenter {
         mHistoryView.viewOnMap(lat, longitude);
     }
 
-    @Override
-    public LocationRequest createLocationRequest(Context context, OnSuccessListener<LocationSettingsResponse> successListener, OnFailureListener failureListener) {
-        mContext = context;
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationBuilder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
-        checkLocationSettings(successListener, failureListener);
-
-        return locationRequest;
-    }
 
     @Override
     public void addressNotFound() {
@@ -76,13 +60,6 @@ public class ParkingHistoryImpl implements MainContract.IParkingPresenter {
         mHistoryView.showSaveAddDialog(addressOutput);
     }
 
-    @Override
-    public void checkLocationSettings(OnSuccessListener<LocationSettingsResponse> successListener, OnFailureListener failureListener) {
-        SettingsClient client = LocationServices.getSettingsClient(mContext);
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(mLocationBuilder.build());
-        task.addOnSuccessListener(successListener);
-        task.addOnFailureListener(failureListener);
-    }
 
     @Override
     public void enableGPS() {

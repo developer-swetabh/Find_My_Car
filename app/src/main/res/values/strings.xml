@@ -15,4 +15,5 @@
     <string name="ok">OK</string>
     <string name="add_fetch_alert">Unable to fetch address, please check your internet and try again!!</string>
     <string name="enable_gps_alert">Please Enable GPS to get current location</string>
+    <string name="google_map_key">AIzaSyCLEByUe7q8GQhMwKaixIUMUgi_W_1UFqs</string>
 </resources>

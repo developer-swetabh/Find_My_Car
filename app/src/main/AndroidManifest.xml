@@ -22,7 +22,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCLEByUe7q8GQhMwKaixIUMUgi_W_1UFqs" />
+            android:value="@string/google_map_key" />
         <activity
             android:name=".ui.activity.SplashScreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -44,11 +44,6 @@
             android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-            <!--  <intent-filter>
-                  <action android:name="android.intent.action.MAIN" />
-
-                  <category android:name="android.intent.category.LAUNCHER" />
-              </intent-filter>-->
         </activity>
 
         <uses-library

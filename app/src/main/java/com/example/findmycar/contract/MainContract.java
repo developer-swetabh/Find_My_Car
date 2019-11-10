@@ -5,6 +5,7 @@ import android.location.Location;
 
 import com.example.findmycar.model.Parking;
 import com.example.findmycar.ui.fragment.BaseFragment;
+import com.example.findmycar.ui.fragment.ParkingHistoryFragment;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -48,11 +49,6 @@ public class MainContract {
 
         void viewOnMap(double lat, double longitude);
 
-        LocationRequest createLocationRequest(Context context, OnSuccessListener<LocationSettingsResponse> successListener, OnFailureListener failureListener);
-
-
-        void checkLocationSettings(OnSuccessListener<LocationSettingsResponse> successListener, OnFailureListener failureListener);
-
         void enableGPS();
 
         void saveLocation(String address, String extraInfo, Location lastKnownLocation);
@@ -64,21 +60,23 @@ public class MainContract {
 
     public interface IMapView {
 
+        void showAddress(String addressOutput);
     }
+
     public interface IFragmentInteraction {
+        void setCommunicator(MainContract.IActivityCommunicator communicator);
+
         void onSaveNewClicked();
+
+        void onLocationUpdate(Location location);
     }
 
     public interface IActivityCommunicator {
-
-        void showLocationSettingsDialog(Exception e);
 
         void showEnableGPSAlert();
 
         void showAddressNotFoundAlert();
 
-        void updateBaseFragment(BaseFragment mBaseFragment);
-
-        void updateLocation(Location lastKnownLocation);
+        void addFragmentInterationListener(IFragmentInteraction fragmentInteraction);
     }
 }

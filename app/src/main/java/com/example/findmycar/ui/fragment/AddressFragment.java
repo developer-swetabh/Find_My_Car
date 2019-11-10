@@ -1,5 +1,6 @@
 package com.example.findmycar.ui.fragment;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,11 +16,21 @@ public class AddressFragment<T> extends DialogFragment implements MainContract.I
     MainContract.IActivityCommunicator mCommunicator;
 
     public void setCommunicator(T communicator) {
+
+    }
+
+    @Override
+    public void setCommunicator(MainContract.IActivityCommunicator communicator) {
         mCommunicator = (MainContract.IActivityCommunicator) communicator;
     }
 
     @Override
     public void onSaveNewClicked() {
+
+    }
+
+    @Override
+    public void onLocationUpdate(Location location) {
 
     }
 

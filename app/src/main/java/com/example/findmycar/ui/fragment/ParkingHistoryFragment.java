@@ -42,17 +42,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.List;
 import java.util.Objects;
 
-public class ParkingHistoryFragment extends BaseFragment implements MainContract.IHistoryView,
-        OnFailureListener, OnSuccessListener<LocationSettingsResponse> {
+public class ParkingHistoryFragment extends BaseFragment implements MainContract.IHistoryView {
 
     private MainContract.IParkingPresenter presenter;
     private TextView tv_NoHistory;
     private RecyclerView rv_ParkingListView;
     private Context mContext;
     public static final long UPDATE_INTERVAL = 5000, FASTEST_INTERVAL = 5000; // = 5 seconds
-    private LocationRequest locationRequest;
-    private FusedLocationProviderClient fusedLocationClient;
-    private LocationCallback locationCallback;
     private AddressResultReceiver mResultReceiver;
     private Location lastKnownLocation;
     private ParkingAdapter mAdapter;
@@ -62,18 +58,6 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_parking_history, container, false);
         mContext = getActivity();
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            getActivity().onBackPressed();
-        }
         tv_NoHistory = view.findViewById(R.id.tv_no_history);
         rv_ParkingListView = view.findViewById(R.id.rv_parking_list);
         rv_ParkingListView.setHasFixedSize(true);
@@ -83,58 +67,14 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         rv_ParkingListView.setAdapter(mAdapter);
         presenter.LoadParkingHistory();
         mResultReceiver = new AddressResultReceiver(new Handler(), presenter);
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    // Update UI with location data
-                    // ...
-                    lastKnownLocation = location;
-                    mCommunicator.updateLocation(lastKnownLocation);
-                    Log.d(MainContract.TAG, "LAT =" + location.getLatitude() + ", long = " + location.getLongitude());
-                }
-            }
-        };
-        locationRequest = presenter.createLocationRequest(mContext, this, this);
+        mCommunicator.addFragmentInterationListener(this);
         return view;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(MainContract.TAG, "onResume() : starting location updates");
-        startLocationUpdates();
-
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Objects.requireNonNull(getActivity()).onBackPressed();
-        }
-        fusedLocationClient.requestLocationUpdates(locationRequest,
-                locationCallback,
-                null /* Looper */);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
-
-    private void stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(locationCallback);
+    public void onLocationUpdate(Location location) {
+        Log.d(MainContract.TAG, "onLocationUpdate : LAT =" + location.getLatitude() + ", long = " + location.getLongitude());
+        lastKnownLocation = location;
     }
 
     @Override
@@ -219,18 +159,4 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         mAdapter.updateList(parking);
     }
 
-
-    @Override
-    public void onFailure(@NonNull Exception e) {
-        if (e instanceof ResolvableApiException) {
-            // Location settings are not satisfied, but this can be fixed
-            // by showing the user a dialog.
-            mCommunicator.showLocationSettingsDialog(e);
-        }
-    }
-
-    @Override
-    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-        startLocationUpdates();
-    }
 }

@@ -25,16 +25,20 @@ import android.view.View;
 import com.example.findmycar.R;
 import com.example.findmycar.adapters.HomePagerAdapter;
 import com.example.findmycar.contract.MainContract;
+import com.example.findmycar.locationProcessor.GeoLocationManager;
+import com.example.findmycar.locationProcessor.IGeoLocationCallback;
 import com.example.findmycar.ui.fragment.BaseFragment;
 import com.example.findmycar.ui.fragment.ParkingHistoryFragment;
 import com.example.findmycar.utils.Utils;
 import com.google.android.gms.common.api.ResolvableApiException;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MainContract.IActivityCommunicator {
+public class MainActivity extends AppCompatActivity implements MainContract.IActivityCommunicator,
+        IGeoLocationCallback {
 
-    BaseFragment mBaseFragment;
+    private List<MainContract.IFragmentInteraction> mFragmentInteractionsList = new ArrayList<>();
     // lists for permissions
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<>();
@@ -44,8 +48,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
     private static final int REQUEST_CHECK_SETTINGS = 1000;
     private View mView;
     private FragmentPagerAdapter mPagerAdapter;
-    ViewPager vpPager;
-    public static Location mLastknownlocation;
+    private ViewPager vpPager;
+    private GeoLocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,20 +57,20 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mView = view;
-                if (mBaseFragment != null)
-                    mBaseFragment.onSaveNewClicked();
+                for (MainContract.IFragmentInteraction interaction : mFragmentInteractionsList) {
+                    if (interaction != null) {
+                        interaction.onSaveNewClicked();
+                    }
+                }
             }
         });
- /*       mBaseFragment = new ParkingHistoryFragment();
-        mBaseFragment.setCommunicator(this);*/
         vpPager = (ViewPager) findViewById(R.id.vpPager);
-        mPagerAdapter = new HomePagerAdapter(getSupportFragmentManager(), mBaseFragment, this);
+        mPagerAdapter = new HomePagerAdapter(getSupportFragmentManager(), this);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(vpPager);
         // we add permissions we need to request location of the users
@@ -80,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
                 requestPermissions(permissionsToRequest.toArray(
                         new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
             } else {
-                //addFragment(mBaseFragment);
                 vpPager.setAdapter(mPagerAdapter);
+                locationManager = new GeoLocationManager(MainActivity.this, this);
             }
         } else {
-            //addFragment(mBaseFragment);
             vpPager.setAdapter(mPagerAdapter);
+            locationManager = new GeoLocationManager(MainActivity.this, this);
         }
 
     }
@@ -145,11 +149,27 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
                         }
                     }
                 } else {
-                    //addFragment(mBaseFragment);
                     vpPager.setAdapter(mPagerAdapter);
+                    locationManager = new GeoLocationManager(MainActivity.this, this);
                 }
 
                 break;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (locationManager != null) {
+            locationManager.startLocationUpdates();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (locationManager != null) {
+            locationManager.stopLocationUpdates();
         }
     }
 
@@ -186,19 +206,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
     }
 
     @Override
-    public void showLocationSettingsDialog(Exception e) {
-        try {
-            // Show the dialog by calling startResolutionForResult(),
-            // and check the result in onActivityResult().
-            ResolvableApiException resolvable = (ResolvableApiException) e;
-            resolvable.startResolutionForResult(MainActivity.this,
-                    REQUEST_CHECK_SETTINGS);
-        } catch (IntentSender.SendIntentException sendEx) {
-            // Ignore the error.
-        }
-    }
-
-    @Override
     public void showEnableGPSAlert() {
         Utils.showSnackBarAlert(mView, this.getString(R.string.enable_gps_alert));
     }
@@ -209,12 +216,29 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
     }
 
     @Override
-    public void updateBaseFragment(BaseFragment baseFragment) {
-        mBaseFragment = baseFragment;
+    public void addFragmentInterationListener(MainContract.IFragmentInteraction fragmentInteraction) {
+        mFragmentInteractionsList.add(fragmentInteraction);
     }
 
     @Override
-    public void updateLocation(Location lastKnownLocation) {
-mLastknownlocation= lastKnownLocation;
+    public void onGeoLocationResult(Location location) {
+        for (MainContract.IFragmentInteraction interaction : mFragmentInteractionsList) {
+            if (interaction != null) {
+                interaction.onLocationUpdate(location);
+            }
+        }
+    }
+
+    @Override
+    public void onLocationFailure(Exception e) {
+        try {
+            // Show the dialog by calling startResolutionForResult(),
+            // and check the result in onActivityResult().
+            ResolvableApiException resolvable = (ResolvableApiException) e;
+            resolvable.startResolutionForResult(MainActivity.this,
+                    REQUEST_CHECK_SETTINGS);
+        } catch (IntentSender.SendIntentException sendEx) {
+            // Ignore the error.
+        }
     }
 }

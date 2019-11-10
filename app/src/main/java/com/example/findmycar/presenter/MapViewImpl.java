@@ -20,6 +20,6 @@ public class MapViewImpl implements MainContract.IMapViewPresenter {
 
     @Override
     public void loadFetchedAddress(String addressOutput) {
-
+        mMapView.showAddress(addressOutput);
     }
 }

@@ -21,8 +21,10 @@
         android:layout_marginLeft="5dp"
         android:layout_marginTop="30dp"
         android:layout_marginRight="5dp"
+        android:background="@drawable/rounded_btn_bg"
+        android:fontFamily="sans-serif-medium"
         android:text="Select Your Location"
-        android:textSize="16sp" />
+        android:textSize="10sp" />
 
     <ImageView
         android:id="@+id/markerView"
