@@ -52,6 +52,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
     private AddressResultReceiver mResultReceiver;
     private Location lastKnownLocation;
     private ParkingAdapter mAdapter;
+    private String mAddressOutput = null;
 
     @Nullable
     @Override
@@ -131,12 +132,13 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         View dialogLayout = inflater.inflate(R.layout.dialog_save_location, null);
         final EditText address = dialogLayout.findViewById(R.id.edt_address);
         final EditText extraInfo = dialogLayout.findViewById(R.id.edt_extra);
-        address.setText(addressOutput);
+        address.setText(mAddressOutput == null ? addressOutput : mAddressOutput);
 
         builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 presenter.saveLocation(address.getText().toString(), extraInfo.getText().toString(), lastKnownLocation);
+                mAddressOutput = null;
                 dialog.dismiss();
             }
         });
@@ -144,6 +146,7 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startIntentService();
+                mAddressOutput = null;
                 dialog.dismiss();
             }
         });
@@ -159,4 +162,8 @@ public class ParkingHistoryFragment extends BaseFragment implements MainContract
         mAdapter.updateList(parking);
     }
 
+    @Override
+    public void onSetNewAddress(String addressOutput) {
+        mAddressOutput = addressOutput;
+    }
 }

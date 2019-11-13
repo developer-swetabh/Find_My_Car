@@ -221,6 +221,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.IAct
     }
 
     @Override
+    public void setNewAddress(String addressOutput) {
+        for (MainContract.IFragmentInteraction interaction : mFragmentInteractionsList) {
+            if (interaction != null) {
+                interaction.onSetNewAddress(addressOutput);
+            }
+        }
+    }
+
+    @Override
     public void onGeoLocationResult(Location location) {
         for (MainContract.IFragmentInteraction interaction : mFragmentInteractionsList) {
             if (interaction != null) {

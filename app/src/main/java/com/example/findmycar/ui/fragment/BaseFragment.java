@@ -21,4 +21,9 @@ public class BaseFragment extends Fragment implements MainContract.IFragmentInte
     public void onLocationUpdate(Location location) {
 
     }
+
+    @Override
+    public void onSetNewAddress(String addressOutput) {
+
+    }
 }

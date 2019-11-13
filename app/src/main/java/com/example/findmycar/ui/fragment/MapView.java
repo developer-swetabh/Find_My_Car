@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.findmycar.R;
 import com.example.findmycar.contract.MainContract;
@@ -22,6 +23,7 @@ import com.example.findmycar.presenter.ParkingHistoryImpl;
 import com.example.findmycar.ui.activity.MainActivity;
 import com.example.findmycar.ui.receivers.AddressResultReceiver;
 import com.example.findmycar.ui.services.FetchAddressIntentService;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -43,12 +45,11 @@ public class MapView extends BaseFragment implements MainContract.IMapView,
     private AddressResultReceiver mResultReceiver;
     private GoogleMap mMap;
     private Marker currentMarker;
-    private LatLng startLatLong;
     private boolean locationFound = false;
     private Context mContext;
     private Location lastKnownLocation;
+    private Location updatedLocation = null;
     private Button locationBtn;
-    private String mAddress = null;
 
 
     public MapView() {
@@ -65,9 +66,20 @@ public class MapView extends BaseFragment implements MainContract.IMapView,
         presenter = new MapViewImpl(this, mCommunicator);
         mResultReceiver = new AddressResultReceiver(new Handler(), presenter);
         locationBtn = rootView.findViewById(R.id.button_loc);
+        ImageView currentLocBtn = rootView.findViewById(R.id.button_current_loc);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);
         mapFragment.getMapAsync(this);
         mCommunicator.addFragmentInterationListener(this);
+        currentLocBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (updatedLocation != null) {
+                    LatLng latLng = new LatLng(updatedLocation.getLatitude(), updatedLocation.getLongitude());
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 19.5f);
+                    mMap.animateCamera(cameraUpdate);
+                }
+            }
+        });
         return rootView;
     }
 
@@ -81,7 +93,7 @@ public class MapView extends BaseFragment implements MainContract.IMapView,
     @Override
     public void onLocationUpdate(Location location) {
         Log.d(MainContract.TAG, "MapView : onLocationUpdate : LAT =" + location.getLatitude() + ", long = " + location.getLongitude());
-        if (location != null && !locationFound) {
+        if (!locationFound) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             CameraPosition currentLoc = CameraPosition.builder()
                     .target(latLng)
@@ -92,6 +104,7 @@ public class MapView extends BaseFragment implements MainContract.IMapView,
             lastKnownLocation = location;
             locationFound = true;
         }
+        updatedLocation = location;
     }
 
     private void startIntentService() {
@@ -104,26 +117,23 @@ public class MapView extends BaseFragment implements MainContract.IMapView,
     @Override
     public void showAddress(String addressOutput) {
         locationBtn.setText(addressOutput);
-        mAddress = addressOutput;
+        mCommunicator.setNewAddress(addressOutput);
     }
 
     @Override
     public void onCameraIdle() {
+        Log.d(MainContract.TAG, "onCameraIdle: ");
         LatLng center = mMap.getCameraPosition().target;
         if (currentMarker != null) {
             currentMarker.remove();
         }
         currentMarker = mMap.addMarker(new MarkerOptions().position(center).title("new position").visible(false));
-        startLatLong = currentMarker.getPosition();
+        LatLng startLatLong = currentMarker.getPosition();
         if (lastKnownLocation != null) {
-            startIntentService();
             lastKnownLocation.setLatitude(startLatLong.latitude);
             lastKnownLocation.setLongitude(startLatLong.longitude);
+            startIntentService();
         }
     }
 
-    @Override
-    public void onSaveNewClicked() {
-
-    }
 }

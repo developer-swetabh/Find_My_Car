@@ -69,6 +69,8 @@ public class MainContract {
         void onSaveNewClicked();
 
         void onLocationUpdate(Location location);
+
+        void onSetNewAddress(String addressOutput);
     }
 
     public interface IActivityCommunicator {
@@ -78,5 +80,7 @@ public class MainContract {
         void showAddressNotFoundAlert();
 
         void addFragmentInterationListener(IFragmentInteraction fragmentInteraction);
+
+        void setNewAddress(String addressOutput);
     }
 }
